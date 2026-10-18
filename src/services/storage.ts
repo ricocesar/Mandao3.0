@@ -4,7 +4,7 @@ import {
 } from '../types/mandao';
 
 // ✅ AQUÍ ESTÁ TU URL REAL DE GOOGLE APPS SCRIPT
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz6Z1oure3TUVo6LLjLd9VgZw_Kh3EVmE6-ACmb0-5XtsETecAj9dq_Wk-fhhU3OE0/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz95uidzXrGGBhjacZ-WDdiNl5ypuK6MdkMNIMCZhT890zH1InMoNEUbN4bM9fXKeA7_g/exec";
 
 // Función maestra para comunicarse con el backend
 async function callApi(action: string, data: Record<string, unknown> = {}) {
@@ -50,8 +50,7 @@ export function getSemanaActual(): string {
 
 export function fmt(n: number | string, customConfig?: ConfigGlobal): string {
   const num = Number(n) || 0;
-  // Al no tener localStorage, usamos valores por defecto si no pasa la config
-  const cfg = customConfig || { tasa_bcv: 60, modo_moneda: 'ambos' };
+  const cfg = customConfig || MandaoStorage.getConfig();
   const tasa = cfg.tasa_bcv || 60;
   const modo = cfg.modo_moneda || 'ambos';
 
@@ -75,7 +74,6 @@ export function fmtUSD(n: number | string): string {
 export async function getDatosCompletos(cedulaConsulta?: string) {
   const res = await callApi('getDatosCompletos', { idUsuario: cedulaConsulta });
   if (res.success) {
-    // Guardamos la sesión localmente para persistencia visual rápida
     if (res.usuario) localStorage.setItem('mandao_current_user', JSON.stringify(res.usuario));
     return res;
   }
@@ -135,7 +133,7 @@ export async function validarPinYEntregar(pedidoId: string, pin: string) {
 }
 
 export async function marcarEntregadoPorComercio(pedidoId: string) {
-  return await callApi('autodespachoComercio', { id_pedido: pedidoId, pin: '0000' }); // PIN bypass backend logic
+  return await callApi('autodespachoComercio', { id_pedido: pedidoId, pin: '0000' });
 }
 
 export async function cancelarPedidoConMotivo(pedidoId: string, motivo: string, rol: string) {
@@ -159,18 +157,35 @@ export async function rechazarSolicitud(id: string, motivo: string) {
   return await callApi('rechazarSolicitud', { id_solicitud: id, motivo });
 }
 
-// Otras funciones dummy temporalmente para que compile React
+// =================== PARCHE DE COMPATIBILIDAD (Lo que faltaba) ===================
 export const MandaoStorage = {
   getCurrentUser: () => {
     const u = localStorage.getItem('mandao_current_user');
     return u ? JSON.parse(u) : null;
   },
-  saveCurrentUser: (u: unknown) => {
+  saveCurrentUser: (u: any) => {
     if (u) localStorage.setItem('mandao_current_user', JSON.stringify(u));
     else localStorage.removeItem('mandao_current_user');
-  }
+  },
+  getConfig: () => ({ 
+    porcentaje_admin: 0.15, tasa_bcv: 60.50, modo_moneda: 'ambos', tarifa_bicicleta: 1.0,
+    nombre_pueblo: 'PAPELÓN', titulo_app: 'Mandao', telefono_soporte: '+58 412-5550199',
+    lat_centro: 9.0744, lng_centro: -69.2483, radio_km: 8, dias_veto: 3,
+    mensaje_bienvenida: '', instagram_mandao: '', email_soporte: '', email_admin: '', 
+    premio_patrocinador: '', terminos_condiciones: '', min_aviso_sin_rep: 5, 
+    min_alerta_sin_rep: 10, min_critico_sin_rep: 15, modo_demo: false
+  }),
+  saveConfig: () => {},
+  getSolicitudes: () => [],
+  getUsuarios: () => [],
+  getReportes: () => [],
+  getSOS: () => [],
+  getCierres: () => [],
+  getPagos: () => [],
+  getAuditoria: () => []
 };
 
+// Funciones que App.tsx necesita pero que aún no conectamos a Google Sheets
 export const registrarAuditoria = () => {};
 export const logError = () => {};
 export const calcularDistanciaKm = () => 0;
