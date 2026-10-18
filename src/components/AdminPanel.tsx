@@ -101,7 +101,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   >('finanzas');
   const [busquedaUsuario, setBusquedaUsuario] = useState<string>('');
 
-  // Financial calculations [76], [77], [78]
+  // Financial calculations
   const entregados = pedidos.filter(p => p.estado === 'Entregado');
   const totalVentasComida = entregados.reduce((sum, p) => sum + (Number(p.subtotal) || 0), 0);
   const totalTarifas = entregados.reduce((sum, p) => sum + (Number(p.tarifa_envio) || 0), 0);
@@ -109,7 +109,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const pctAdmin = config.porcentaje_admin || 0.15;
   const gananciaMandao = (totalTarifas + totalPropinas) * pctAdmin;
 
-  // Accounts receivable from stores [76]
+  // Accounts receivable from stores
   const deudaComercios: Record<string, { id: string; nombre: string; pedidos: number; totalTarifas: number; comisionMandao: number; aTransferir: number }> = {};
   entregados.forEach(p => {
     const cid = p.comercio_id || 'COM-X';
@@ -130,7 +130,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     deudaComercios[cid].aTransferir += tarifa;
   });
 
-  // Rider payouts [77]
+  // Rider payouts
   const pagosRepartidores: Record<string, { id: string; nombre: string; viajes: number; totalGanado: number; aPagar: number }> = {};
   entregados.forEach(p => {
     const rId = p.repartidor_id || 'REP-X';
@@ -144,7 +144,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     pagosRepartidores[rId].aPagar += net;
   });
 
-  // [89] Advanced Metrics calculations
+  // Advanced Metrics calculations
   const totalPedidos = pedidos.length;
   const cancelados = pedidos.filter(p => p.estado === 'Cancelado' || p.estado === 'cancelado_fraude').length;
   const tasaCancelacion = totalPedidos > 0 ? ((cancelados / totalPedidos) * 100).toFixed(1) : '0';
@@ -174,7 +174,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
 
-  // [78] Export to CSV/Excel
+  // Export to CSV/Excel
   const handleExportarExcelFinanzas = () => {
     const encabezados = ['ID Pedido', 'Fecha/Hora', 'Comercio', 'Cliente', 'Subtotal USD', 'Envio USD', 'Propina USD', 'Total USD', 'Estado', 'Repartidor'];
     const filas = pedidos.map(p => [
@@ -221,13 +221,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* [59] Demo Mode Badge indicator */}
-          <span
-            className={`text-[9px] px-2 py-0.5 rounded-full font-black ${
-              config.modo_demo ? 'bg-amber-400 text-black animate-pulse' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-            }`}
-          >
-            {config.modo_demo ? '⚠️ MODO DEMO ACTIVO' : '🟢 MODO PRODUCCIÓN REAL'}
+          {/* Production Mode Badge */}
+          <span className="text-[9px] px-2 py-0.5 rounded-full font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+            🟢 MODO PRODUCCIÓN REAL
           </span>
 
           <button
@@ -272,7 +268,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Tab Panels */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3 pb-24 hide-scrollbar">
-        {/* ================= 1. FINANZAS [76] - [79] ================= */}
+        {/* ================= 1. FINANZAS ================= */}
         {adminTab === 'finanzas' && (
           <div className="space-y-3">
             {/* Summary Cards */}
@@ -318,7 +314,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             </div>
 
-            {/* [76] Cuentas por Cobrar (Comercios) */}
+            {/* Cuentas por Cobrar (Comercios) */}
             <div className="bg-[#1C1C26] rounded-2xl p-3 border border-white/10 space-y-2">
               <h4 className="font-heading font-black text-xs text-white">
                 Cuentas por Cobrar a Comercios (Tarifas cobradas en efectivo/pago móvil)
@@ -346,7 +342,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               )}
             </div>
 
-            {/* [77] Pagos Pendientes a Repartidores */}
+            {/* Pagos Pendientes a Repartidores */}
             <div className="bg-[#1C1C26] rounded-2xl p-3 border border-white/10 space-y-2">
               <h4 className="font-heading font-black text-xs text-white">
                 Pagos Pendientes a Repartidores (Tarifas + Propinas netas)
@@ -392,7 +388,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* ================= 2. MÉTRICAS [89] ================= */}
+        {/* ================= 2. MÉTRICAS ================= */}
         {adminTab === 'metricas' && (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
@@ -440,7 +436,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* ================= 3. REPORTES CRUZADOS & 3 STRIKES [80], [81] ================= */}
+        {/* ================= 3. REPORTES CRUZADOS & 3 STRIKES ================= */}
         {adminTab === 'reportes' && (
           <div className="space-y-2.5">
             <h4 className="font-heading font-black text-xs text-white">
@@ -689,7 +685,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* ================= 9. SOS EMERGENCIAS [85] ================= */}
+        {/* ================= 9. SOS EMERGENCIAS ================= */}
         {adminTab === 'sos' && (
           <div className="space-y-2">
             <h4 className="font-heading font-black text-xs text-white">Eventos SOS y Emergencias</h4>
@@ -711,7 +707,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* ================= 10. AUDITORÍA [98] ================= */}
+        {/* ================= 10. AUDITORÍA ================= */}
         {adminTab === 'auditoria' && (
           <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -741,36 +737,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* ================= 11. CONFIGURACIÓN [59], [62], [83] ================= */}
+        {/* ================= 11. CONFIGURACIÓN ================= */}
         {adminTab === 'config' && (
           <div className="space-y-3">
-            {/* [59] Modo Demo Toggle */}
-            <div className="bg-[#1C1C26] p-3 rounded-2xl border-2 border-amber-500/40 space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-heading font-black text-xs text-white flex items-center gap-1.5">
-                    <span>🎮</span>
-                    <span>Modo Demo (Pruebas sin alterar datos reales)</span>
-                  </h4>
-                  <p className="text-[10px] text-neutral-400 mt-0.5">
-                    Permite mostrar datos de prueba ficticios. Al apagarlo, la app opera 100% limpia para lanzamiento.
-                  </p>
-                </div>
-                <button
-                  onClick={() => onUpdateConfig('modo_demo', !config.modo_demo)}
-                  className={`w-11 h-6 rounded-full p-1 flex items-center transition-all ${
-                    config.modo_demo ? 'bg-amber-400 justify-end' : 'bg-neutral-700 justify-start'
-                  }`}
-                >
-                  <div className="w-4 h-4 rounded-full bg-black shadow-sm"></div>
-                </button>
-              </div>
-              <p className="text-[10px] text-neutral-400 font-mono bg-[#121217] p-2 rounded-xl">
-                Link de demo directo: <strong className="text-[#FFCC00]">?demo=1</strong>
-              </p>
-            </div>
-
-            {/* [62] Tasa BCV & Moneda */}
+            {/* Tasa BCV & Moneda */}
             <div className="bg-[#1C1C26] p-3 rounded-2xl border border-white/10 space-y-2">
               <h4 className="font-heading font-black text-xs text-white">Tasa de Cambio BCV y Moneda</h4>
               <div className="grid grid-cols-2 gap-2">
@@ -799,7 +769,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             </div>
 
-            {/* [83] Cobertura Geográfica */}
+            {/* Cobertura Geográfica */}
             <div className="bg-[#1C1C26] p-3 rounded-2xl border border-white/10 space-y-2">
               <h4 className="font-heading font-black text-xs text-white">Zona de Cobertura Papelón</h4>
               <div className="grid grid-cols-3 gap-2">
