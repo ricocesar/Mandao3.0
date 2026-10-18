@@ -1,0 +1,6 @@
+{
+  "name": "Mandao Delivery",
+  "description": "Plataforma integral de delivery para clientes, comercios afiliados, repartidores y super administración.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
