@@ -4,7 +4,7 @@ import {
 } from '../types/mandao';
 
 // ✅ AQUÍ ESTÁ TU URL REAL DE GOOGLE APPS SCRIPT
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz95uidzXrGGBhjacZ-WDdiNl5ypuK6MdkMNIMCZhT890zH1InMoNEUbN4bM9fXKeA7_g/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz6Z1oure3TUVo6LLjLd9VgZw_Kh3EVmE6-ACmb0-5XtsETecAj9dq_Wk-fhhU3OE0/exec";
 
 // Función maestra para comunicarse con el backend
 async function callApi(action: string, data: Record<string, unknown> = {}) {
